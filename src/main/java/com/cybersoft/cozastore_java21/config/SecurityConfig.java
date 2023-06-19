@@ -53,7 +53,7 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) //Khai báo không sử dụng session trong project
                 .and()
                 .authorizeHttpRequests() // Quy định lại các rule liên quan tới chứng thực cho link được gọi
-                    .antMatchers("/signin","/signup").permitAll()
+                    .antMatchers("/signin","/signup", "/demo/**").permitAll()
                     .anyRequest().authenticated() //Tất cả các link còn lại đều phải chứng thực
                 .and()
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

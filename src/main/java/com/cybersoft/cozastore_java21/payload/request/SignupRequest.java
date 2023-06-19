@@ -17,7 +17,7 @@ public class SignupRequest {
 
     @NotNull(message = "Email not null")
     @NotEmpty(message = "Email not empty")
-    @Email(message = "Email invalid format")
+    @Email(message = "Email invalid format" ,regexp = "^[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*$")
     private String email;
 
     public String getUsername() {
