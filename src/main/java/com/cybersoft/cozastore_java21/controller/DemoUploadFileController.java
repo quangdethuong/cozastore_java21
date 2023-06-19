@@ -1,13 +1,14 @@
 package com.cybersoft.cozastore_java21.controller;
 
 
+import com.cybersoft.cozastore_java21.exception.CustomFileNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Files;
@@ -22,6 +23,26 @@ public class DemoUploadFileController {
     @Value("${path.root}")
     private String sPath;
 
+
+    @GetMapping("/{filename}")
+    public ResponseEntity<?> loadfile(@PathVariable String filename){
+        try {
+            //đường dẫn folder lưu hình
+            Path rootPath = Paths.get(sPath);
+            Resource resource = new UrlResource(rootPath.resolve(filename).toUri());
+            if (resource.exists()){
+                // neu ton tai thi cho phep download
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                        .body(resource);
+            }
+            else {
+                throw new CustomFileNotFoundException(200, "File not found"); // code se stop ngay neu gap loi
+            }
+        }catch (Exception e){
+            throw new CustomFileNotFoundException(200, "File not found"); // code se stop ngay neu gap loi
+        }
+    }
     @PostMapping("/uploadfile")
     public ResponseEntity<?> uploadFile(@RequestParam MultipartFile file) {
         // Định nghĩa đường dẫn
