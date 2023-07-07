@@ -1,5 +1,6 @@
 package com.cybersoft.cozastore_java21.controller;
 
+import com.cybersoft.cozastore_java21.exception.CustomException;
 import com.cybersoft.cozastore_java21.payload.request.SignupRequest;
 import com.cybersoft.cozastore_java21.payload.response.BaseResponse;
 import com.cybersoft.cozastore_java21.service.imp.UserServiceImp;
@@ -9,14 +10,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.lang.reflect.Field;
+import java.util.List;
 
 @RestController
+@CrossOrigin("*")
 public class LoginController {
 
     @Autowired
@@ -53,7 +56,12 @@ public class LoginController {
     }
 
     @RequestMapping(value = "/signup",method = RequestMethod.POST)
-    public ResponseEntity<?> signup(@Valid SignupRequest request){
+    public ResponseEntity<?> signup(@Valid SignupRequest request, BindingResult result){
+        List<FieldError> list = result.getFieldErrors();
+        for (FieldError data: list){
+            throw new CustomException(data.getDefaultMessage());
+            //System.out.println("Kiem tra " + data.getField() + " - " + data.getDefaultMessage());
+        }
         boolean isSuccess = userServiceImp.addUser(request);
 
         BaseResponse response = new BaseResponse();
